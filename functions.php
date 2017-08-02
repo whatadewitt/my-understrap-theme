@@ -45,5 +45,11 @@ function theme_pre_set_transient_update_theme($transient) {
 }
 add_filter( 'pre_set_site_transient_update_themes', 'theme_pre_set_transient_update_theme' );
 
+// echo out a message in the footer so we can ensure the site is running
+function ensure_site_status() {
+    echo "<!--STATUS:OK-->";
+}
+add_action( 'wp_footer', 'ensure_site_status' );
+
 // child theme specific logic
 require_once('child-functions.php');
