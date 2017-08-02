@@ -1,5 +1,5 @@
-# poc-understrap-child
-Proof of concept of using Basic Child Theme for UnderStrap Theme Framework as a site theme: https://github.com/holger1411/understrap
+# my-child-theme
+Proof of concept of using our Base Child Theme for UnderStrap as a site theme: https://github.com/whatadewitt/poc-understrap-child
 
 ## How it works
 It shares with the parent theme all PHP files and adds its own functions.php on top of the UnderStrap parent themes functions.php.

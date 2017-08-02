@@ -1,29 +1,19 @@
 {
-  "name": "understrap-child",
-  "version": "0.3.2",
-  "description": "Basic Child Theme for UnderStrap Theme Framework: https://github.com/holger1411/understrap",
+  "name": "my-child-theme",
+  "version": "0.0.1",
+  "description": "Child theme based off of our base theme: https://github.com/whatadewitt/poc-understrap-child",
   "main": "index.js",
   "scripts": {
     "postinstall": "gulp copy-assets"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/holger1411/understrap-child.git"
+    "url": "https://github.com/whatadewitt/my-child-theme.git"
   },
-    "keywords": [
-    "wordpress",
-    "theme",
-    "framework",
-    "bootstrap",
-    "underscores"
-  ],
+  "keywords": ["wordpress", "theme", "framework", "bootstrap", "underscores"],
 
-  "author": "Holger Koenemann",
+  "author": "REDspace",
   "license": "GPL-2.0",
-  "bugs": {
-    "url": "https://github.com/holger1411/understrap-child/issues"
-  },
-  "homepage": "https://understrap.com",
   "dependencies": {
     "bootstrap": "^4.0.0-alpha.6",
     "browser-sync": "^2.18.8",
@@ -50,5 +40,4 @@
     "undescores-for-npm": "^1.0.0",
     "understrap": "^0.6.2"
   }
-    
 }
