@@ -47,18 +47,19 @@ function theme_enqueue_styles() {
 add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles' );
 
 // todo: ensure all the "required" plugins are activated (cleaner than mu-plugins)
-// ... may make sense as an mu-plugin?
+// might make sense to do that in an mu-plugin...
 
 // child theme specific logic
 require_once('child-functions.php');
 
 // at the end of the day, this may be worth moving to an mu-plugin to avoid folks from potentially breaking things
+
 // this is where the release info will be stored...
 $api_result = false;
 
 // get the release info
 function get_repo_release_info() {
-	global $github_access_token, $github_repo_name;
+	global $github_access_token, $github_repo_name, $api_result;
 
 	// Only do this once
 	if ( !empty( $api_result ) ) {
@@ -66,7 +67,6 @@ function get_repo_release_info() {
 	}
 
 	// Query the GitHub API
-	// todo: update the user here ;)
 	$url = "https://api.github.com/repos/whatadewitt/{$github_repo_name}/releases";
 
 	// We need the access token for private repos
@@ -90,11 +90,9 @@ function get_repo_release_info() {
 // this will force even administrators to follow a proper flow
 // for updating themes.
 function theme_pre_set_transient_update_theme( $transient ) {
-	$theme_name = get_stylesheet(); // because child theme...
+	global $api_result;
 
-	// if( empty( $transient->checked[$theme_name] ) ) {
-	// 	return $transient;
-	// }
+	$theme_name = get_stylesheet(); // because child theme...
 
 	if ( empty( $transient->checked ) ) {
 		return $transient;
@@ -104,11 +102,11 @@ function theme_pre_set_transient_update_theme( $transient ) {
 	$do_update = version_compare( $api_result->tag_name, $transient->checked[$theme_name] );
 
 	if ( $do_update == 1 ) {
-		$obj = new stdClass();
-		$obj->slug = $theme_name;
-		$obj->new_version = $this->api_result->tag_name;
-		$obj->url = $this->plugin_data['PluginURI'];
-		$obj->package = false;
+		$obj = array();
+		$obj['slug'] = $theme_name;
+		$obj['new_version'] = $api_result->tag_name;
+		$obj['url'] = $api_result->html_url;
+		$obj['package'] = false;
 		$transient->response[$theme_name] = $obj;
 	}
 
