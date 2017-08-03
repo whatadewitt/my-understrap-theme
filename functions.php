@@ -90,7 +90,6 @@ function get_repo_release_info() {
 // for updating themes.
 function theme_pre_set_transient_update_theme( $transient ) {
 	$theme_name = get_stylesheet(); // because child theme...
-	error_log("HIT");
 
 	// if( empty( $transient->checked[$theme_name] ) ) {
 	// 	return $transient;
