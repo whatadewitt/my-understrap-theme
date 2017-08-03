@@ -33,53 +33,84 @@ function ensure_site_status() {
 }
 add_action( 'wp_footer', 'ensure_site_status' );
 
+function theme_enqueue_styles() {
+	// Get the theme data
+	$the_theme = wp_get_theme();
+  $theme_name = get_stylesheet(); // because child theme
+
+  // styles
+  wp_enqueue_style( "{$theme_name}-styles", get_stylesheet_directory_uri() . '/css/child-theme.min.css', array(), $the_theme->get( 'Version' ) ); // TODO: update child theme file name
+  
+  // scripts
+  wp_enqueue_script( "{$theme_name}-scripts", get_stylesheet_directory_uri() . '/js/child-theme.min.js', array(), $the_theme->get( 'Version' ), true ); // TODO: update child theme file name
+}
+add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles' );
+
 // todo: ensure all the "required" plugins are activated (cleaner than mu-plugins)
+// ... may make sense as an mu-plugin?
 
 // child theme specific logic
 require_once('child-functions.php');
 
+// at the end of the day, this may be worth moving to an mu-plugin to avoid folks from potentially breaking things
+// this is where the release info will be stored...
+$api_result = false;
+
+// get the release info
 function get_repo_release_info() {
-	die("hello");
+	global $github_access_token, $github_repo_name;
+
 	// Only do this once
-	if ( !empty( $this->api_result ) ) {
+	if ( !empty( $api_result ) ) {
 		return;
 	}
 
 	// Query the GitHub API
-	$url = "https://api.github.com/repos/whatadewitt/{$repo}/releases";
+	// todo: update the user here ;)
+	$url = "https://api.github.com/repos/whatadewitt/{$github_repo_name}/releases";
 
 	// We need the access token for private repos
-	if ( !empty( $this->access_token ) ) {
-		$url = add_query_arg( array( 'access_token' => $this->this->access_token ), $url );
+	if ( !empty( $github_access_token ) ) {
+		$url = add_query_arg( array( 'access_token' => $github_access_token ), $url );
 	}
 
 	// Get the results
-	$this->api_result = wp_remote_retrieve_body( wp_remote_get( $url ) );
-	if ( !empty( $this->api_result ) ) {
-		$this->api_result = @json_decode( $this->api_result );
+	$api_result = wp_remote_retrieve_body( wp_remote_get( $url ) );
+	if ( !empty( $api_result ) ) {
+		$api_result = @json_decode( $api_result );
 	}
 
 	// Use only the latest release
-	if ( is_array( $this->api_result ) ) {
-		$this->api_result = $this->api_result[0];
+	if ( is_array( $api_result ) ) {
+		$api_result = $api_result[0];
 	}
 }
-add_action('init', 'get_repo_release_info');
 
 // this will simply remove the "update now" option on a theme
 // this will force even administrators to follow a proper flow
 // for updating themes.
-function theme_pre_set_transient_update_theme($transient) {
+function theme_pre_set_transient_update_theme( $transient ) {
 	$theme_name = get_stylesheet(); // because child theme...
 
-	if( empty( $transient->checked[$theme_name] ) ) {
+	// if( empty( $transient->checked[$theme_name] ) ) {
+	// 	return $transient;
+	// }
+
+	if ( empty( $transient->checked ) ) {
 		return $transient;
 	}
 
-	// TODO: Check releases versus github...
-	$url = do_action( 'get_github_release_url' );
+	get_repo_release_info();
+	$do_update = version_compare( $api_result->tag_name, $transient->checked[$theme_name] );
 
-	$transient->response[$theme_name] = false;
+	if ( $do_update == 1 ) {
+		$obj = new stdClass();
+		$obj->slug = $theme_name;
+		$obj->new_version = $this->api_result->tag_name;
+		$obj->url = $this->plugin_data['PluginURI'];
+		$obj->package = false;
+		$transient->response[$theme_name] = $obj;
+	}
 
 	return $transient;
 }
