@@ -1,6 +1,6 @@
 {
   "name": "my-child-theme",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Child theme based off of our base theme: https://github.com/whatadewitt/poc-understrap-child",
   "main": "index.js",
   "scripts": {
