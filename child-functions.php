@@ -13,3 +13,7 @@ function theme_enqueue_styles() {
   wp_enqueue_script( "{$theme_name}-scripts", get_stylesheet_directory_uri() . '/js/child-theme.min.js', array(), $the_theme->get( 'Version' ), true ); // TODO: update child theme file name
 }
 add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles' );
+
+// function 
+
+// add_action( 'get_github_release_url', 'build_github_url', priority, accepted_args )
